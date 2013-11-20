@@ -29,15 +29,7 @@ public class SMSReceiver extends BroadcastReceiver {
                 smsMessage[n] = SmsMessage.createFromPdu((byte[]) messages[n]);
             }
 
-            // show first message
-            Log.e("", " smsMessage[0].getDisplayOriginatingAddress()==" + smsMessage[0].getDisplayOriginatingAddress() + "  smsMessage[0].getOriginatingAddress()==" + smsMessage[0].getOriginatingAddress() + "  smsMessage[0].getServiceCenterAddress()==" + smsMessage[0].getServiceCenterAddress());
-//            final SharedPreferences mpref =context.getSharedPreferences("BLOCK",context.MODE_PRIVATE);
-//            String str=mpref.getString("phonesms","Phone");
-            Log.e("phone no==", "" + smsMessage[0].getOriginatingAddress());
             DataBaseManager db = new DataBaseManager(context);
-            db.AddToInbox(String.valueOf(smsMessage[0].getTimestampMillis())
-                    , String.valueOf(smsMessage[0].getOriginatingAddress())
-                    , smsMessage[0].getMessageBody());
             if (smsMessage[0].getOriginatingAddress().equals("15555215554")) {
                 toast = Toast.makeText(context, "BLOCKED Received SMS: " + smsMessage[0].getMessageBody(), Toast.LENGTH_LONG);
                 toast.show();
