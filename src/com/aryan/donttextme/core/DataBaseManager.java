@@ -24,10 +24,10 @@ public class DataBaseManager extends SQLiteOpenHelper {
     private static final String COLUMN_TIME = "time";
     private static final String COLUMN_ADDRESS = "address";
     private static final String COLUMN_BODY = "body";
-    private static final String COLUMN_FILTER = "body";
+    private static final String COLUMN_UNREAD = "unread";
 
-    private static final String CREATE_STATEMENT_SMS = String.format("CREATE TABLE  %s (%s TEXT PRIMARY KEY, %s TEXT, %s TEXT)",
-            TABLE_INBOX, COLUMN_TIME, COLUMN_ADDRESS, COLUMN_BODY);
+    private static final String CREATE_STATEMENT_SMS = String.format("CREATE TABLE  %s (%s TEXT PRIMARY KEY, %s TEXT, %s TEXT, %s BOOLEAN)",
+            TABLE_INBOX, COLUMN_TIME, COLUMN_ADDRESS, COLUMN_BODY, COLUMN_UNREAD);
 
     public DataBaseManager(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -50,6 +50,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
             cv.put(COLUMN_TIME, time);
             cv.put(COLUMN_ADDRESS, address);
             cv.put(COLUMN_BODY, body);
+            cv.put(COLUMN_UNREAD, true);
             db.insert(TABLE_INBOX, null, cv);
         }
         db.close();
