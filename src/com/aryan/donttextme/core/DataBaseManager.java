@@ -76,7 +76,6 @@ public class DataBaseManager extends SQLiteOpenHelper {
     }
 
 
-
     public ArrayList<SMS> getAllSms() {
         ArrayList<SMS> list = new ArrayList<SMS>();
         SQLiteDatabase db = getReadableDatabase();
@@ -112,26 +111,28 @@ public class DataBaseManager extends SQLiteOpenHelper {
                 db.close();
                 return true;
             }
-            cursor = db.rawQuery(String.format("SELECT %s,%s FROM %s WHERE %s NOT IN (SELECT %s FROM %s)"
-                    , COLUMN_FILTER_KEY, COLUMN_KEYWORD_FILTER, TABLE_BLACKLIST
+            cursor = db.rawQuery(String.format("SELECT %s,%s FROM %s WHERE %s IS NOT NULL AND %s NOT IN (SELECT %s FROM %s)"
+                    , COLUMN_FILTER_KEY, COLUMN_KEYWORD_FILTER, TABLE_BLACKLIST, COLUMN_KEYWORD_FILTER
                     , COLUMN_KEYWORD_FILTER, COLUMN_KEYWORD_FILTER, TABLE_WHITE_LIST), null);
             if (hasTheKeywords(cursor, smsMessage.getMessageBody())) {
                 db.close();
                 return true;
             }
-            cursor = db.rawQuery(String.format("SELECT %s,%s FROM %s WHERE %s NOT IN (SELECT %s FROM %s)"
-                    , COLUMN_FILTER_KEY, COLUMN_STARTING_NUMBER_FILTER, TABLE_BLACKLIST
-                    , COLUMN_STARTING_NUMBER_FILTER, COLUMN_STARTING_NUMBER_FILTER, TABLE_WHITE_LIST), null);
-            if (senderNumberIsStartingWith(cursor, smsMessage.getOriginatingAddress())) {
-                db.close();
-                return true;
-            }
-            cursor = db.rawQuery(String.format("SELECT %s,%s FROM %s WHERE %s NOT IN (SELECT %s FROM %s)"
-                    , COLUMN_FILTER_KEY, COLUMN_NUMBER_RANGE_FILTER, TABLE_BLACKLIST
-                    , COLUMN_NUMBER_RANGE_FILTER, COLUMN_NUMBER_RANGE_FILTER, TABLE_WHITE_LIST), null);
-            if (isInNumberRanges(cursor, smsMessage.getOriginatingAddress())) {
-                db.close();
-                return true;
+            if (senderAddressIsNumber(smsMessage.getOriginatingAddress())) {
+                cursor = db.rawQuery(String.format("SELECT %s,%s FROM %s WHERE %s IS NOT NULL AND %s NOT IN (SELECT %s FROM %s)"
+                        , COLUMN_FILTER_KEY, COLUMN_STARTING_NUMBER_FILTER, TABLE_BLACKLIST, COLUMN_STARTING_NUMBER_FILTER
+                        , COLUMN_STARTING_NUMBER_FILTER, COLUMN_STARTING_NUMBER_FILTER, TABLE_WHITE_LIST), null);
+                if (senderNumberIsStartingWith(cursor, smsMessage.getOriginatingAddress())) {
+                    db.close();
+                    return true;
+                }
+                cursor = db.rawQuery(String.format("SELECT %s,%s FROM %s WHERE %s IS NOT NULL AND %s NOT IN (SELECT %s FROM %s)"
+                        , COLUMN_FILTER_KEY, COLUMN_NUMBER_RANGE_FILTER, TABLE_BLACKLIST, COLUMN_NUMBER_RANGE_FILTER
+                        , COLUMN_NUMBER_RANGE_FILTER, COLUMN_NUMBER_RANGE_FILTER, TABLE_WHITE_LIST), null);
+                if (isInNumberRanges(cursor, smsMessage.getOriginatingAddress())) {
+                    db.close();
+                    return true;
+                }
             }
         }
 
@@ -141,7 +142,9 @@ public class DataBaseManager extends SQLiteOpenHelper {
 
     private boolean isInNumberRanges(Cursor cursor, String senderNumber) {
         cursor.moveToFirst();
-        long number = Long.getLong(senderNumber.replace(PLUS, ""));
+        if (senderNumber.startsWith(PLUS))
+            senderNumber = senderNumber.replace(PLUS, "");
+        long number = Long.getLong(senderNumber);
         long[] range = new long[2];
         String[] temp;
         while (!cursor.isAfterLast()) {
@@ -169,7 +172,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
     private boolean hasTheKeywords(Cursor cursor, String smsBody) {
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
-            if (smsBody.toLowerCase().contains(cursor.getString(1).toLowerCase())) {
+            if (smsBody.toLowerCase().contains(cursor.getString(1))) {
                 AddToInbox(SMS, cursor.getInt(COLUMN_INDEX_FILTER_KEY));
                 return true;
             }
@@ -188,6 +191,31 @@ public class DataBaseManager extends SQLiteOpenHelper {
             cursor.moveToNext();
         }
         return false;
+    }
+
+    private boolean senderAddressIsNumber(String address) {
+        if (address.contains("+"))
+            return true;
+        else if (address.contains("9"))
+            return true;
+        else if (address.contains("0"))
+            return true;
+        else if (address.contains("3"))
+            return true;
+        else if (address.contains("1"))
+            return true;
+        else if (address.contains("2"))
+            return true;
+        else if (address.contains("5"))
+            return true;
+        else if (address.contains("4"))
+            return true;
+        else if (address.contains("7"))
+            return true;
+        else if (address.contains("6"))
+            return true;
+        else
+            return false;
     }
 
     //region Add & Remove
@@ -232,7 +260,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues cv = new ContentValues();
         synchronized (lock) {
-            cv.put(COLUMN_KEYWORD_FILTER, keyword);
+            cv.put(COLUMN_KEYWORD_FILTER, keyword.toLowerCase());
             db.insert(TABLE_BLACKLIST, null, cv);
         }
         db.close();
@@ -242,7 +270,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues cv = new ContentValues();
         synchronized (lock) {
-            cv.put(COLUMN_KEYWORD_FILTER, keyword);
+            cv.put(COLUMN_KEYWORD_FILTER, keyword.toLowerCase());
             db.insert(TABLE_WHITE_LIST, null, cv);
         }
         db.close();
