@@ -144,13 +144,13 @@ public class DataBaseManager extends SQLiteOpenHelper {
         cursor.moveToFirst();
         if (senderNumber.startsWith(PLUS))
             senderNumber = senderNumber.replace(PLUS, "");
-        long number = Long.getLong(senderNumber);
+        long number = Long.parseLong(senderNumber);
         long[] range = new long[2];
         String[] temp;
         while (!cursor.isAfterLast()) {
             temp = cursor.getString(1).split(SEPARATOR);
-            range[0] = Long.getLong(temp[0]);
-            range[1] = Long.getLong(temp[1]);
+            range[0] = Long.parseLong(temp[0]);
+            range[1] = Long.parseLong(temp[1]);
             if (number > range[0] && number < range[1]) {
                 AddToInbox(SMS, cursor.getInt(COLUMN_INDEX_FILTER_KEY));
                 return true;
