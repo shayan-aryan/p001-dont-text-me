@@ -19,8 +19,6 @@ public class SMSReceiver extends BroadcastReceiver {
 
 
         if (MSG_TYPE.equals("android.provider.Telephony.SMS_RECEIVED")) {
-            Toast toast = Toast.makeText(context, "SMS Received: " + MSG_TYPE, Toast.LENGTH_LONG);
-            toast.show();
 
             Bundle bundle = intent.getExtras();
             Object messages[] = (Object[]) bundle.get("pdus");
@@ -30,14 +28,15 @@ public class SMSReceiver extends BroadcastReceiver {
             }
 
             DataBaseManager db = new DataBaseManager(context);
-            if (smsMessage[0].getOriginatingAddress().equals("15555215554")) {
-                toast = Toast.makeText(context, "BLOCKED Received SMS: " + smsMessage[0].getMessageBody(), Toast.LENGTH_LONG);
+            if (db.isInBlackListAndNotInWhiteList(smsMessage[0])) {
+                Toast toast = Toast.makeText(context, "BLOCKED Received SMS: " + smsMessage[0].getMessageBody(), Toast.LENGTH_LONG);
                 toast.show();
                 abortBroadcast();
             }
 
 
-        } else if (MSG_TYPE.equals("android.provider.Telephony.SEND_SMS")) {
+        }
+//        else if (MSG_TYPE.equals("android.provider.Telephony.SEND_SMS")) {
 //	        Toast toast = Toast.makeText(context,"SMS SENT: "+MSG_TYPE , Toast.LENGTH_LONG);
 //	        toast.show();
 //	        abortBroadcast();
@@ -45,17 +44,16 @@ public class SMSReceiver extends BroadcastReceiver {
 //	        {
 //	            System.out.println("Blocking SMS **********************");
 //	        }
-
-        } else {
-
-            Toast toast = Toast.makeText(context, "SIN ELSE: " + MSG_TYPE, Toast.LENGTH_LONG);
-            toast.show();
-            abortBroadcast();
-            for (int i = 0; i < 8; i++) {
-                System.out.println("Blocking SMS **********************");
-            }
-
-        }
+//
+//        } else {
+//
+//            Toast toast = Toast.makeText(context, "SIN ELSE: " + MSG_TYPE, Toast.LENGTH_LONG);
+//            toast.show();
+//            abortBroadcast();
+//            for (int i = 0; i < 8; i++) {
+//                System.out.println("Blocking SMS **********************");
+//            }
+//        }
 
     }
 
