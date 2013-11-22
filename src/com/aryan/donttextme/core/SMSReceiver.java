@@ -33,19 +33,21 @@ public class SMSReceiver extends BroadcastReceiver {
             toast.show();
 
             DataBaseManager db = new DataBaseManager(context);
-            db.AddToInbox(smsMessage[0], 44);
-            if (db.isInWhiteList(smsMessage[0])) {
+            if (db.isInWhiteList(smsMessage)) {
                 toast = Toast.makeText(context, "This sender is in white list: " + smsMessage[0].getOriginatingAddress(), Toast.LENGTH_LONG);
                 toast.show();
                 return;
-            } else if (db.isInBlackList(smsMessage[0])) {
+            } else if (db.isInBlackList(smsMessage)) {
                 toast = Toast.makeText(context, "BLOCKED SMS: " + smsMessage[0].getMessageBody(), Toast.LENGTH_LONG);
                 toast.show();
+                db.AddToInbox(smsMessage, 44);
                 abortBroadcast();
             } else if (PossiblyIsSpam(smsMessage[0])) {
                 // user chooses
                 toast = Toast.makeText(context, "Possibly Spam SMS: " + smsMessage[0].getMessageBody(), Toast.LENGTH_LONG);
                 toast.show();
+                db.AddToInbox(smsMessage, 46);
+                abortBroadcast();
             }
         }
 //        else if (MSG_TYPE.equals("android.provider.Telephony.SEND_SMS")) {
