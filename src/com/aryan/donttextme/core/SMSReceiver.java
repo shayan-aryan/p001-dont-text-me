@@ -9,8 +9,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.telephony.SmsMessage;
-import android.util.Log;
 import android.widget.Toast;
+
+import com.aryan.donttextme.configuration.AppConfig;
+import com.aryan.donttextme.util.StringUtil;
 
 public class SMSReceiver extends BroadcastReceiver {
 
@@ -21,20 +23,30 @@ public class SMSReceiver extends BroadcastReceiver {
         if (MSG_TYPE.equals("android.provider.Telephony.SMS_RECEIVED")) {
 
             Bundle bundle = intent.getExtras();
-            Object messages[] = (Object[]) bundle.get("pdus");
-            SmsMessage smsMessage[] = new SmsMessage[messages.length];
-            for (int n = 0; n < messages.length; n++) {
-                smsMessage[n] = SmsMessage.createFromPdu((byte[]) messages[n]);
+            Object pdu[] = (Object[]) bundle.get("pdus");
+            SmsMessage smsMessage[] = new SmsMessage[pdu.length];
+            for (int n = 0; n < pdu.length; n++) {
+                smsMessage[n] = SmsMessage.createFromPdu((byte[]) pdu[n]);
             }
+
+            Toast toast = Toast.makeText(context, "Received SMS: " + smsMessage[0].getMessageBody(), Toast.LENGTH_LONG);
+            toast.show();
 
             DataBaseManager db = new DataBaseManager(context);
-            if (db.isInBlackListAndNotInWhiteList(smsMessage[0])) {
-                Toast toast = Toast.makeText(context, "BLOCKED Received SMS: " + smsMessage[0].getMessageBody(), Toast.LENGTH_LONG);
+            db.AddToInbox(smsMessage[0], 44);
+            if (db.isInWhiteList(smsMessage[0])) {
+                toast = Toast.makeText(context, "This sender is in white list: " + smsMessage[0].getOriginatingAddress(), Toast.LENGTH_LONG);
+                toast.show();
+                return;
+            } else if (db.isInBlackList(smsMessage[0])) {
+                toast = Toast.makeText(context, "BLOCKED SMS: " + smsMessage[0].getMessageBody(), Toast.LENGTH_LONG);
                 toast.show();
                 abortBroadcast();
+            } else if (PossiblyIsSpam(smsMessage[0])) {
+                // user chooses
+                toast = Toast.makeText(context, "Possibly Spam SMS: " + smsMessage[0].getMessageBody(), Toast.LENGTH_LONG);
+                toast.show();
             }
-
-
         }
 //        else if (MSG_TYPE.equals("android.provider.Telephony.SEND_SMS")) {
 //	        Toast toast = Toast.makeText(context,"SMS SENT: "+MSG_TYPE , Toast.LENGTH_LONG);
@@ -54,7 +66,25 @@ public class SMSReceiver extends BroadcastReceiver {
 //                System.out.println("Blocking SMS **********************");
 //            }
 //        }
-
     }
+
+    private boolean PossiblyIsSpam(SmsMessage message) {
+        if (message.getOriginatingAddress().length() < AppConfig.REGULAR_PHONE_NUMBERS_LENGTH)
+            return true;
+        else if (!StringUtil.IsNumber(message.getOriginatingAddress()))
+            return true;
+        else if (isInSpamList(message.getOriginatingAddress()))
+            return true;
+        else
+            return false;
+    }
+
+    private boolean isInSpamList(String sender){
+        if(sender.equals(AppConfig.IRANCELL_A))
+            return true;
+        else
+            return false;
+    }
+
 
 }

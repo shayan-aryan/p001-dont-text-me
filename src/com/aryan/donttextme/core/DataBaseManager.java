@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.telephony.SmsMessage;
 
 import com.aryan.donttextme.model.SMS;
+import com.aryan.donttextme.util.StringUtil;
 
 import java.util.ArrayList;
 
@@ -58,6 +59,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
     private static final String CREATE_STATEMENT_WHITE_LIST = String.format(
             "CREATE TABLE  %s (%s INTEGER PRIMARY KEY AUTOINCREMENT, %s TEXT, %s TEXT, %s TEXT, %s TEXT, %s TEXT)",
             TABLE_WHITE_LIST, COLUMN_FILTER_KEY, COLUMN_NAME, COLUMN_SPECIFIC_NUMBER_FILTER, COLUMN_STARTING_NUMBER_FILTER, COLUMN_NUMBER_RANGE_FILTER, COLUMN_KEYWORD_FILTER);
+    private Cursor mCursor;
 
     public DataBaseManager(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -98,38 +100,42 @@ public class DataBaseManager extends SQLiteOpenHelper {
         return list;
     }
 
-    public boolean isInBlackListAndNotInWhiteList(SmsMessage smsMessage) {
-        SMS = smsMessage;
+    public boolean isInBlackList(SmsMessage smsMessage) {
         SQLiteDatabase db = getReadableDatabase();
         synchronized (lock) {
-            Cursor cursor = db.rawQuery(String.format("SELECT %s FROM %s WHERE %s='%s' AND %s NOT IN(SELECT %s FROM %s)"
-                    , COLUMN_FILTER_KEY, TABLE_BLACKLIST, COLUMN_SPECIFIC_NUMBER_FILTER, smsMessage.getOriginatingAddress()
-                    , COLUMN_SPECIFIC_NUMBER_FILTER, COLUMN_SPECIFIC_NUMBER_FILTER, TABLE_WHITE_LIST), null);
-            cursor.moveToFirst();
-            if (!cursor.isAfterLast()) {// sender number is in specific numbers
-                AddToInbox(smsMessage, cursor.getInt(0));
+            mCursor = db.rawQuery(String.format("SELECT * FROM %s", TABLE_BLACKLIST), null);
+            mCursor.moveToFirst();
+            if (mCursor.isAfterLast()) {//  black_list Table is empty
+                return false;
+            }
+
+            mCursor = db.rawQuery(String.format("SELECT %s FROM %s WHERE %s='%s'"
+                    , COLUMN_FILTER_KEY, TABLE_BLACKLIST, COLUMN_SPECIFIC_NUMBER_FILTER, smsMessage.getOriginatingAddress()), null);
+            mCursor.moveToFirst();
+            if (!mCursor.isAfterLast()) {// sender number is in specific numbers
+                AddToInbox(smsMessage, mCursor.getInt(COLUMN_INDEX_FILTER_KEY));
                 db.close();
                 return true;
             }
-            cursor = db.rawQuery(String.format("SELECT %s,%s FROM %s WHERE %s IS NOT NULL AND %s NOT IN (SELECT %s FROM %s)"
-                    , COLUMN_FILTER_KEY, COLUMN_KEYWORD_FILTER, TABLE_BLACKLIST, COLUMN_KEYWORD_FILTER
-                    , COLUMN_KEYWORD_FILTER, COLUMN_KEYWORD_FILTER, TABLE_WHITE_LIST), null);
-            if (hasTheKeywords(cursor, smsMessage.getMessageBody())) {
+            mCursor = db.rawQuery(String.format("SELECT %s,%s FROM %s WHERE %s IS NOT NULL"
+                    , COLUMN_FILTER_KEY, COLUMN_KEYWORD_FILTER, TABLE_BLACKLIST, COLUMN_KEYWORD_FILTER), null);
+            if (hasTheKeywords(smsMessage.getMessageBody())) {
+                AddToInbox(smsMessage, mCursor.getInt(COLUMN_INDEX_FILTER_KEY));
                 db.close();
                 return true;
             }
-            if (senderAddressIsNumber(smsMessage.getOriginatingAddress())) {
-                cursor = db.rawQuery(String.format("SELECT %s,%s FROM %s WHERE %s IS NOT NULL AND %s NOT IN (SELECT %s FROM %s)"
-                        , COLUMN_FILTER_KEY, COLUMN_STARTING_NUMBER_FILTER, TABLE_BLACKLIST, COLUMN_STARTING_NUMBER_FILTER
-                        , COLUMN_STARTING_NUMBER_FILTER, COLUMN_STARTING_NUMBER_FILTER, TABLE_WHITE_LIST), null);
-                if (senderNumberIsStartingWith(cursor, smsMessage.getOriginatingAddress())) {
+            if (StringUtil.IsNumber(smsMessage.getOriginatingAddress())) {
+                mCursor = db.rawQuery(String.format("SELECT %s,%s FROM %s WHERE %s IS NOT NULL"
+                        , COLUMN_FILTER_KEY, COLUMN_STARTING_NUMBER_FILTER, TABLE_BLACKLIST, COLUMN_STARTING_NUMBER_FILTER), null);
+                if (senderNumberIsStartingWith(smsMessage.getOriginatingAddress())) {
+                    AddToInbox(smsMessage, mCursor.getInt(COLUMN_INDEX_FILTER_KEY));
                     db.close();
                     return true;
                 }
-                cursor = db.rawQuery(String.format("SELECT %s,%s FROM %s WHERE %s IS NOT NULL AND %s NOT IN (SELECT %s FROM %s)"
-                        , COLUMN_FILTER_KEY, COLUMN_NUMBER_RANGE_FILTER, TABLE_BLACKLIST, COLUMN_NUMBER_RANGE_FILTER
-                        , COLUMN_NUMBER_RANGE_FILTER, COLUMN_NUMBER_RANGE_FILTER, TABLE_WHITE_LIST), null);
-                if (isInNumberRanges(cursor, smsMessage.getOriginatingAddress())) {
+                mCursor = db.rawQuery(String.format("SELECT %s,%s FROM %s WHERE %s IS NOT NULL"
+                        , COLUMN_FILTER_KEY, COLUMN_NUMBER_RANGE_FILTER, TABLE_BLACKLIST, COLUMN_NUMBER_RANGE_FILTER), null);
+                if (isInNumberRanges(smsMessage.getOriginatingAddress())) {
+                    AddToInbox(smsMessage, mCursor.getInt(COLUMN_INDEX_FILTER_KEY));
                     db.close();
                     return true;
                 }
@@ -140,83 +146,99 @@ public class DataBaseManager extends SQLiteOpenHelper {
         return false;
     }
 
-    private boolean isInNumberRanges(Cursor cursor, String senderNumber) {
-        cursor.moveToFirst();
+    public boolean isInWhiteList(SmsMessage smsMessage) {
+        SQLiteDatabase db = getReadableDatabase();
+        synchronized (lock) {
+
+            mCursor = db.rawQuery(String.format("SELECT * FROM %s", TABLE_WHITE_LIST), null);
+            mCursor.moveToFirst();
+            if (mCursor.isAfterLast()) {//  white_list Table is empty
+                return false;
+            }
+            mCursor = db.rawQuery(String.format("SELECT %s FROM %s WHERE %s='%s'"
+                    , COLUMN_FILTER_KEY, TABLE_WHITE_LIST, COLUMN_SPECIFIC_NUMBER_FILTER, smsMessage.getOriginatingAddress()), null);
+            mCursor.moveToFirst();
+            if (!mCursor.isAfterLast()) {// sender number is in specific numbers
+                db.close();
+                return true;
+            }
+            mCursor = db.rawQuery(String.format("SELECT %s FROM %s WHERE %s IS NOT NULL"
+                    , COLUMN_KEYWORD_FILTER, TABLE_WHITE_LIST, COLUMN_KEYWORD_FILTER), null);
+            if (hasTheKeywords(smsMessage.getMessageBody())) {
+                db.close();
+                return true;
+            }
+            if (StringUtil.IsNumber(smsMessage.getOriginatingAddress())) {
+                mCursor = db.rawQuery(String.format("SELECT %s,%s FROM %s WHERE %s IS NOT NULL"
+                        , COLUMN_FILTER_KEY, COLUMN_STARTING_NUMBER_FILTER, TABLE_WHITE_LIST, COLUMN_STARTING_NUMBER_FILTER), null);
+                if (senderNumberIsStartingWith(smsMessage.getOriginatingAddress())) {
+                    db.close();
+                    return true;
+                }
+                mCursor = db.rawQuery(String.format("SELECT %s,%s FROM %s WHERE %s IS NOT NULL"
+                        , COLUMN_FILTER_KEY, COLUMN_NUMBER_RANGE_FILTER, TABLE_WHITE_LIST, COLUMN_NUMBER_RANGE_FILTER), null);
+                if (isInNumberRanges(smsMessage.getOriginatingAddress())) {
+                    db.close();
+                    return true;
+                }
+            }
+        }
+
+        db.close();
+        return false;
+    }
+
+    private boolean isInNumberRanges(String senderNumber) {
+        mCursor.moveToFirst();
         if (senderNumber.startsWith(PLUS))
             senderNumber = senderNumber.replace(PLUS, "");
         long number = Long.parseLong(senderNumber);
         long[] range = new long[2];
         String[] temp;
-        while (!cursor.isAfterLast()) {
-            temp = cursor.getString(1).split(SEPARATOR);
+        while (!mCursor.isAfterLast()) {
+            temp = mCursor.getString(1).split(SEPARATOR);
             range[0] = Long.parseLong(temp[0]);
             range[1] = Long.parseLong(temp[1]);
             if (number > range[0] && number < range[1]) {
-                AddToInbox(SMS, cursor.getInt(COLUMN_INDEX_FILTER_KEY));
                 return true;
             }
-            cursor.moveToNext();
+            mCursor.moveToNext();
         }
         return false;
     }
 
-    private boolean senderIsInSpecificNumbers(Cursor cursor) {
-        cursor.moveToFirst();
-        if (!cursor.isAfterLast()) {
-            AddToInbox(SMS, cursor.getInt(COLUMN_INDEX_FILTER_KEY));
+    private boolean senderIsInSpecificNumbers() {
+        mCursor.moveToFirst();
+        if (!mCursor.isAfterLast()) {
+            AddToInbox(SMS, mCursor.getInt(COLUMN_INDEX_FILTER_KEY));
             return true;
         } else
             return false;
     }
 
-    private boolean hasTheKeywords(Cursor cursor, String smsBody) {
-        cursor.moveToFirst();
-        while (!cursor.isAfterLast()) {
-            if (smsBody.toLowerCase().contains(cursor.getString(1))) {
-                AddToInbox(SMS, cursor.getInt(COLUMN_INDEX_FILTER_KEY));
+    private boolean hasTheKeywords(String smsBody) {
+        mCursor.moveToFirst();
+        while (!mCursor.isAfterLast()) {
+            if (smsBody.toLowerCase().contains(mCursor.getString(1))) {
                 return true;
             }
-            cursor.moveToNext();
+            mCursor.moveToNext();
         }
         return false;
     }
 
-    private boolean senderNumberIsStartingWith(Cursor cursor, String senderNumber) {
-        cursor.moveToFirst();
-        while (!cursor.isAfterLast()) {
-            if (senderNumber.startsWith(cursor.getString(1))) {
-                AddToInbox(SMS, cursor.getInt(COLUMN_INDEX_FILTER_KEY));
+    private boolean senderNumberIsStartingWith(String senderNumber) {
+        mCursor.moveToFirst();
+        while (!mCursor.isAfterLast()) {
+            if (senderNumber.startsWith(mCursor.getString(1))) {
                 return true;
             }
-            cursor.moveToNext();
+            mCursor.moveToNext();
         }
         return false;
     }
 
-    private boolean senderAddressIsNumber(String address) {
-        if (address.contains("+"))
-            return true;
-        else if (address.contains("9"))
-            return true;
-        else if (address.contains("0"))
-            return true;
-        else if (address.contains("3"))
-            return true;
-        else if (address.contains("1"))
-            return true;
-        else if (address.contains("2"))
-            return true;
-        else if (address.contains("5"))
-            return true;
-        else if (address.contains("4"))
-            return true;
-        else if (address.contains("7"))
-            return true;
-        else if (address.contains("6"))
-            return true;
-        else
-            return false;
-    }
+
 
     //region Add & Remove
     public void AddToInbox(SmsMessage smsMessage, int filterKey) {
