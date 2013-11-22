@@ -243,7 +243,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         String sender = smsMessage[0].getOriginatingAddress();
         StringBuffer body = new StringBuffer();
         for(int i=0; i< smsMessage.length; i++)
-            body.append(smsMessage[i].getMessageBody()).append(" ");
+            body.append(smsMessage[i].getMessageBody());
 
         SQLiteDatabase db = getWritableDatabase();
         ContentValues cv = new ContentValues();
