@@ -10,6 +10,12 @@ import android.widget.TextView;
 import com.aryan.donttextme.R;
 import com.aryan.donttextme.core.DataBaseManager;
 import com.aryan.donttextme.model.SMS;
+import com.aryan.donttextme.util.StringUtil;
+
+import org.joda.time.Chronology;
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
+import org.joda.time.chrono.IslamicChronology;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -61,7 +67,17 @@ public class SmsAdapter extends BaseAdapter {
             time=viewHolder.time;
             body=viewHolder.body;
         }
-        time.setText(String.valueOf(items.get(position).getTime()));
+        DateTime dtISO = new DateTime(items.get(position).getTime());
+        DateTime IslamicDate = dtISO.withChronology(IslamicChronology.getInstanceUTC());
+        Chronology hijriChron = IslamicChronology.getInstanceUTC();
+        LocalDate hijriDate = new LocalDate(items.get(position).getTime(), hijriChron);
+        String month = StringUtil.getHijriMonthName(context, IslamicDate.getMonthOfYear());
+        String day = String.valueOf(hijriDate.getDayOfMonth());
+        String hour = String.valueOf(IslamicDate.getHourOfDay());
+        String minute = String.valueOf(IslamicDate.getMinuteOfHour());
+        String second = String.valueOf(IslamicDate.getSecondOfMinute());
+        String date = day + "/"+month+" "+hour+":"+minute+":"+second;
+        time.setText(date);
         sender.setText(items.get(position).getSender());
         body.setText(items.get(position).getBody());
 
