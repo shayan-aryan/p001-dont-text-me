@@ -9,15 +9,22 @@
             android:id="@+id/list"
             android:layout_height="match_parent"
             android:layout_width="match_parent"
-            android:layout_above="@+id/button"
+            android:layout_above="@+id/off"
             />
     <Button
-        android:id="@+id/button"
+        android:id="@+id/on"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:text="ok"
+        android:text="on"
         />
+    <Button
+            android:id="@+id/off"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/on"
+            android:text="off"
+            />
 
 </RelativeLayout>
 

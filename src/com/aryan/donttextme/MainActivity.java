@@ -1,12 +1,15 @@
 package com.aryan.donttextme;
 
 import android.app.Activity;
+import android.content.ComponentName;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 
 import com.aryan.donttextme.core.DataBaseManager;
+import com.aryan.donttextme.core.SMSReceiver;
 import com.aryan.donttextme.ui.adapter.SmsAdapter;
 
 public class MainActivity extends Activity {
@@ -25,14 +28,28 @@ public class MainActivity extends Activity {
         adapter = new SmsAdapter(this);
         list.setAdapter(adapter);
 
-        Button ok = (Button) findViewById(R.id.button);
-        ok.setOnClickListener(new View.OnClickListener() {
+        Button on = (Button) findViewById(R.id.on);
+        on.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 DataBaseManager db = new DataBaseManager(MainActivity.this);
                 db.eraseBlacklist();
-//                db.AddToSpecificNumbersBlackList("15555215556");
                 db.AddToKeywordsBlackList("Hi");
+                ComponentName componentName = new ComponentName(MainActivity.this, SMSReceiver.class);
+                PackageManager packageManager = getPackageManager();
+                packageManager.setComponentEnabledSetting(componentName,
+                        PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
+
+            }
+        });
+        Button off = (Button) findViewById(R.id.on);
+        off.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ComponentName componentName = new ComponentName(MainActivity.this, SMSReceiver.class);
+                PackageManager packageManager = getPackageManager();
+                packageManager.setComponentEnabledSetting(componentName,
+                        PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
             }
         });
     }

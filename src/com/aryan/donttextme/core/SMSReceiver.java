@@ -116,7 +116,8 @@ public class SMSReceiver extends BroadcastReceiver {
         String title = mContext.getString(R.string.message_received);
         String body = message.getOriginatingAddress() + ":\r\n" + message.getMessageBody();
         Intent i = new Intent(mContext, MainActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, i, Intent.FLAG_ACTIVITY_NEW_TASK);
+        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, i, Intent.FLAG_ACTIVITY_CLEAR_TOP);
         Notification n = new Notification(R.drawable.notification, title + "\r\n" + body, System.currentTimeMillis());
         n.flags = Notification.FLAG_AUTO_CANCEL;
         n.setLatestEventInfo(mContext, title, body, pendingIntent);
