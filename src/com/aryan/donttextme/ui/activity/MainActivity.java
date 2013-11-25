@@ -1,4 +1,4 @@
-package com.aryan.donttextme;
+package com.aryan.donttextme.ui.activity;
 
 import android.app.Activity;
 import android.content.ComponentName;
@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 
+import com.aryan.donttextme.R;
 import com.aryan.donttextme.core.DataBaseManager;
 import com.aryan.donttextme.core.SMSReceiver;
 import com.aryan.donttextme.ui.adapter.SmsAdapter;

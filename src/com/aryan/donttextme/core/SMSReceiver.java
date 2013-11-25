@@ -15,7 +15,7 @@ import android.os.Bundle;
 import android.telephony.SmsMessage;
 import android.widget.Toast;
 
-import com.aryan.donttextme.MainActivity;
+import com.aryan.donttextme.ui.activity.MainActivity;
 import com.aryan.donttextme.R;
 import com.aryan.donttextme.configuration.AppConfig;
 import com.aryan.donttextme.util.StringUtil;
