@@ -30,6 +30,9 @@ import java.util.List;
 public class SmsAdapter extends BaseAdapter {
     ArrayList<SMS> items = new ArrayList<SMS>();
     private Context context;
+    private DateTime dateTime;
+    private PersianDate mPersianDate;
+    private String date, month, day, hour, minute, second;
 
     public SmsAdapter(Context context) {
         this.context = context;
@@ -74,14 +77,14 @@ public class SmsAdapter extends BaseAdapter {
         DateTime IslamicDate = dtISO.withChronology(IslamicChronology.getInstanceUTC());
         Chronology hijriChron = IslamicChronology.getInstanceUTC();
         LocalDate hijriDate = new LocalDate(items.get(position).getTime(), hijriChron);*/
-        DateTime dateTime = new DateTime();
-        PersianDate mPersianDate = DateConverter.civilToPersian(new MiladiDate(Integer.valueOf(dateTime.getYear()), Integer.valueOf(dateTime.getMonthOfYear()), Integer.valueOf(dateTime.getDayOfMonth())));
-        String month = mPersianDate.getMonthName();
-        String day = String.valueOf(mPersianDate.getDayOfMonth());
-        String hour = String.valueOf(dateTime.getHourOfDay());
-        String minute = String.valueOf(dateTime.getMinuteOfHour());
-        String second = String.valueOf(dateTime.getSecondOfMinute());
-        String date = day + "/"+month+"   "+hour+":"+minute+":"+second;
+        dateTime = new DateTime(items.get(position).getTime());
+        mPersianDate = DateConverter.civilToPersian(new MiladiDate(Integer.valueOf(dateTime.getYear()), Integer.valueOf(dateTime.getMonthOfYear()), Integer.valueOf(dateTime.getDayOfMonth())));
+        month = mPersianDate.getMonthName();
+        day = String.valueOf(mPersianDate.getDayOfMonth());
+        hour = String.valueOf(dateTime.getHourOfDay());
+        minute = String.valueOf(dateTime.getMinuteOfHour());
+        second = String.valueOf(dateTime.getSecondOfMinute());
+        date = day + "/"+month+"   "+hour+":"+minute+":"+second;
         time.setText(date);
         sender.setText(items.get(position).getSender());
         body.setText(items.get(position).getBody());

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="mobile_number_prefixes">
+        <item>+98910</item>
+        <item>+98911</item>
+        <item>+98912</item>
+        <item>+98913</item>
+        <item>+98914</item>
+        <item>+98915</item>
+        <item>+98916</item>
+        <item>+98917</item>
+        <item>+98918</item>
+        <item>+98919</item>
+        <item>+98920</item>
+        <item>+98921</item>
+        <item>+98930</item>
+        <item>+98931</item>
+        <item>+98932</item>
+        <item>+98933</item>
+        <item>+98934</item>
+        <item>+98935</item>
+        <item>+98936</item>
+        <item>+98937</item>
+        <item>+98938</item>
+        <item>+98939</item>
+    </string-array>
+</resources>

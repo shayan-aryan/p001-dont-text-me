@@ -43,19 +43,19 @@ public class SMSReceiver extends BroadcastReceiver {
             DataBaseManager db = new DataBaseManager(context);
             //////////////////
             db.AddToInbox(smsMessage, 48);
-            notifyBlockedMessage(smsMessage[0]);
-            abortBroadcast();
+            /*notifyBlockedMessage(smsMessage[0]);
+            abortBroadcast();*/
             //////////////////
             if (db.isInWhiteList(smsMessage)) {
-                toast = Toast.makeText(context, "This sender is in white list: " + smsMessage[0].getOriginatingAddress(), Toast.LENGTH_LONG);
-                toast.show();
+                /*toast = Toast.makeText(context, "This sender is in white list: " + smsMessage[0].getOriginatingAddress(), Toast.LENGTH_LONG);
+                toast.show();*/
                 return;
             } else if (db.isInBlackList(smsMessage)) {
                 /*toast = Toast.makeText(context, "BLOCKED SMS: " + smsMessage[0].getMessageBody(), Toast.LENGTH_LONG);
                 toast.show();*/
                 notifyBlockedMessage(smsMessage[0]);
                 abortBroadcast();
-            } else if (PossiblyIsSpam(smsMessage[0])) {
+            } else if (isPossiblySpam(smsMessage[0])) {
                 // user chooses
                 /*toast = Toast.makeText(context, "Possibly Spam SMS: " + smsMessage[0].getMessageBody(), Toast.LENGTH_LONG);
                 toast.show();*/
@@ -83,12 +83,11 @@ public class SMSReceiver extends BroadcastReceiver {
 //        }
     }
 
-    private boolean PossiblyIsSpam(SmsMessage message) {
-        if (message.getOriginatingAddress().length() < AppConfig.REGULAR_PHONE_NUMBERS_LENGTH)
+    private boolean isPossiblySpam(SmsMessage message) {
+        String address = message.getOriginatingAddress();
+        if (!StringUtil.IsNumber(address))
             return true;
-        else if (!StringUtil.IsNumber(message.getOriginatingAddress()))
-            return true;
-        else if (isInSpamList(message.getOriginatingAddress()))
+        else if (!isMobileNumber(address))
             return true;
         else
             return false;
@@ -101,14 +100,24 @@ public class SMSReceiver extends BroadcastReceiver {
             return false;
     }
 
+    private boolean isMobileNumber(String number) {
+        String prefix = number.substring(0, 6);
+        String[] mobilePrefixes = mContext.getResources().getStringArray(R.array.mobile_number_prefixes);
+        for (int i = 0; i < mobilePrefixes.length; i++)
+            if (prefix.equals(mobilePrefixes[i]))
+                return true;
+
+        return false;
+    }
+
     @SuppressWarnings("deprecation")
     @SuppressLint("NewApi")
-    private void notifyBlockedMessage(SmsMessage message){
+    private void notifyBlockedMessage(SmsMessage message) {
         String title = mContext.getString(R.string.message_received);
         String body = message.getOriginatingAddress() + ":\r\n" + message.getMessageBody();
         Intent i = new Intent(mContext, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, i, Intent.FLAG_ACTIVITY_NEW_TASK);
-        Notification n = new Notification(R.drawable.notification, title+"\r\n"+body, System.currentTimeMillis());
+        Notification n = new Notification(R.drawable.notification, title + "\r\n" + body, System.currentTimeMillis());
         n.flags = Notification.FLAG_AUTO_CANCEL;
         n.setLatestEventInfo(mContext, title, body, pendingIntent);
         NotificationManager notificationManager = (NotificationManager) mContext.getSystemService(mContext.NOTIFICATION_SERVICE);
