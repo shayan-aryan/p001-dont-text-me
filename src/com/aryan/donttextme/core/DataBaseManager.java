@@ -96,6 +96,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
                 cursor.moveToNext();
             }
             cursor.close();
+            db.close();
         }
         return list;
     }
@@ -158,6 +159,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
             mCursor = db.rawQuery(String.format("SELECT * FROM %s", TABLE_WHITE_LIST), null);
             mCursor.moveToFirst();
             if (mCursor.isAfterLast()) {//  white_list Table is empty
+                db.close();
                 return false;
             }
             mCursor = db.rawQuery(String.format("SELECT %s FROM %s WHERE %s='%s'"
