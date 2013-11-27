@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Sample List</string>
+
+    <!--month names-->
     <string name="month_farvardind">فروردین</string>
     <string name="month_ordibehesht">اردیبهشت</string>
     <string name="month_khordad">خرداد</string>
@@ -14,6 +16,20 @@
     <string name="month_bahman">بهمن</string>
     <string name="month_esfand">اسفند</string>
 
-    <string name="message_received">پیامک تبلیغاتی اومد!</string>
+    <!--fields-->
     <string name="messages">پیامک ها</string>
+    <string name="filter_by">شرط فیلتر:</string>
+    <string name="originating_address">شماره مبداء:</string>
+    <string name="keyword_in_message">اگر این کلمه کلیدی در پیام باشد:</string>
+    <string name="number_starting_with">اگر شماره مبداء با این اعداد شروع شود:</string>
+    <string name="number_between">اگر شماره مبداء بین این شماره ها باشد:</string>
+    <string name="filter_name">نام فیلتر</string>
+
+
+    <!--dialogs-->
+    <string name="spam_message_received">پیامک تبلیغاتی اومد!</string>
+    <string name="message_blocked">پیامک فیلتر شد</string>
+
+
+
 </resources>

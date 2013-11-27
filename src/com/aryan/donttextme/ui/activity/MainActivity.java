@@ -5,6 +5,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.renderscript.Element;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -20,7 +21,8 @@ import android.widget.TextView;
 import com.aryan.donttextme.R;
 import com.aryan.donttextme.core.DataBaseManager;
 import com.aryan.donttextme.core.SMSReceiver;
-import com.aryan.donttextme.ui.adapter.SmsAdapter;
+import com.aryan.donttextme.ui.fragment.BlackListFragment;
+import com.aryan.donttextme.ui.fragment.SmsListFragment;
 
 public class MainActivity extends FragmentActivity {
     static final int ITEMS = 3;
@@ -30,10 +32,6 @@ public class MainActivity extends FragmentActivity {
     /**
      * Called when the activity is first created.
      */
-
-    public MainActivity(){
-
-    }
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,32 +41,6 @@ public class MainActivity extends FragmentActivity {
 
         mPager = (ViewPager) findViewById(R.id.pager);
         mPager.setAdapter(mAdapter);
-
-
-/*        Button on = (Button) findViewById(R.id.on);
-        on.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                DataBaseManager db = new DataBaseManager(MainActivity.this);
-                db.eraseBlacklist();
-                db.AddToKeywordsBlackList("Hi");
-                ComponentName componentName = new ComponentName(MainActivity.this, SMSReceiver.class);
-                PackageManager packageManager = getPackageManager();
-                packageManager.setComponentEnabledSetting(componentName,
-                        PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
-
-            }
-        });
-        Button off = (Button) findViewById(R.id.off);
-        off.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ComponentName componentName = new ComponentName(MainActivity.this, SMSReceiver.class);
-                PackageManager packageManager = getPackageManager();
-                packageManager.setComponentEnabledSetting(componentName,
-                        PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
-            }
-        });*/
     }
 
     public class SectionsAdapter extends FragmentPagerAdapter {
@@ -80,7 +52,9 @@ public class MainActivity extends FragmentActivity {
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:
-                    return new FiltersFragment();
+                    return new SmsListFragment();
+                case 1:
+                    return new BlackListFragment();
                 default:
                     Fragment fragment = new DummySectionFragment();
                     Bundle args = new Bundle();
@@ -102,44 +76,7 @@ public class MainActivity extends FragmentActivity {
         }
     }
 
-    public class FiltersFragment extends Fragment {
-        private ListView list;
-        private SmsAdapter adapter;
 
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            View view = inflater.inflate(R.layout.activity_main_old, container, false);
-            list = (ListView) view.findViewById(R.id.list);
-            adapter = new SmsAdapter(MainActivity.this);
-            list.setAdapter(adapter);
-
-            Button on = (Button) view.findViewById(R.id.on);
-            on.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    DataBaseManager db = new DataBaseManager(MainActivity.this);
-                    db.eraseBlacklist();
-                    db.AddToKeywordsBlackList("Hi");
-                    ComponentName componentName = new ComponentName(MainActivity.this, SMSReceiver.class);
-                    PackageManager packageManager = getPackageManager();
-                    packageManager.setComponentEnabledSetting(componentName,
-                            PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
-
-                }
-            });
-            Button off = (Button) view.findViewById(R.id.off);
-            off.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    ComponentName componentName = new ComponentName(MainActivity.this, SMSReceiver.class);
-                    PackageManager packageManager = getPackageManager();
-                    packageManager.setComponentEnabledSetting(componentName,
-                            PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
-                }
-            });
-            return view;
-        }
-    }
 
     public static class DummySectionFragment extends Fragment {
 

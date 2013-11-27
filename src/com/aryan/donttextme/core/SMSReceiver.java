@@ -113,7 +113,7 @@ public class SMSReceiver extends BroadcastReceiver {
     @SuppressWarnings("deprecation")
     @SuppressLint("NewApi")
     private void notifyBlockedMessage(SmsMessage message) {
-        String title = mContext.getString(R.string.message_received);
+        String title = mContext.getString(R.string.spam_message_received);
         String body = message.getOriginatingAddress() + ":\r\n" + message.getMessageBody();
         Intent i = new Intent(mContext, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, i, Intent.FLAG_ACTIVITY_CLEAR_TOP);

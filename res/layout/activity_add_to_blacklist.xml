@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="8dp"
+                android:gravity="right"
+                android:background="@color/gray">
+
+    <TextView
+            android:id="@+id/aligner1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/filter_by"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="10dp"
+            android:gravity="right"
+            style="@style/textView"/>
+
+    <CheckBox
+            android:id="@+id/checkBox_originatingAddress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/aligner1"
+            android:layout_marginTop="10dp"
+            android:layout_alignParentRight="true"/>
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/checkBox_originatingAddress"
+            android:layout_toLeftOf="@+id/checkBox_originatingAddress"
+            android:layout_marginRight="5dp"
+            android:text="@string/originating_address"
+            style="@style/textView"/>
+
+    <LinearLayout
+            android:id="@+id/aligner2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/checkBox_originatingAddress"
+            android:layout_marginTop="5dp"
+            android:orientation="horizontal">
+
+        <Button
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="..."/>
+
+        <EditText
+                android:id="@+id/originatingAddress"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="5"
+                android:inputType="text"/>
+    </LinearLayout>
+
+
+</RelativeLayout>
