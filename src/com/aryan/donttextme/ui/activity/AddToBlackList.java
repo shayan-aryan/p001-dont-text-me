@@ -17,6 +17,5 @@ public class AddToBlackList extends Activity {
         setContentView(R.layout.activity_add_to_blacklist);
 
         EditText OriginatingAddress = (EditText) findViewById(R.id.originatingAddress);
-        OriginatingAddress.setFocusable(false);
     }
 }
