@@ -6,7 +6,7 @@
                 android:layout_height="match_parent"
                 android:padding="8dp"
                 android:gravity="right"
-                android:background="@color/gray">
+                android:background="@drawable/background_gradient">
 
     <TextView
             android:id="@+id/aligner1"
@@ -46,16 +46,17 @@
 
         <Button
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="..."/>
+                android:text="..."
+                android:textColor="@color/white"
+                style="@style/button"/>
 
         <EditText
                 android:id="@+id/originatingAddress"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="5"
-                android:inputType="text"/>
+                android:layout_weight="6"
+                android:inputType="number"
+                style="@style/editText"/>
     </LinearLayout>
 
 
