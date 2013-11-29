@@ -29,6 +29,7 @@ public class SmsListFragment extends Fragment {
         adapter = new SmsAdapter(mActivity);
         list.setAdapter(adapter);
 
+
         Button on = (Button) view.findViewById(R.id.on);
         on.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -65,6 +66,10 @@ public class SmsListFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        adapter.notifyDataSetChanged();
+    }
+
+    public void UpdateItems(){
         adapter.notifyDataSetChanged();
     }
 }

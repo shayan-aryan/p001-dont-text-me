@@ -24,6 +24,8 @@ public class MainActivity extends ActionBarActivity {
     static final int ITEMS = 2;
     private ViewPager mPager;
     private SectionsAdapter mAdapter;
+    private BlackListFragment blackListFragment;
+    private SmsListFragment smsListFragment;
 
     /**
      * Called when the activity is first created.
@@ -33,6 +35,8 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        smsListFragment = new SmsListFragment();
+        blackListFragment = new BlackListFragment();
         mAdapter = new SectionsAdapter(getSupportFragmentManager());
 
         mPager = (ViewPager) findViewById(R.id.pager);
@@ -68,6 +72,14 @@ public class MainActivity extends ActionBarActivity {
 
     }
 
+/*    @Override
+    protected void onResume() {
+        super.onResume();
+        smsListFragment.UpdateItems();
+        blackListFragment.UpdateItems();
+
+    }*/
+
     public class SectionsAdapter extends FragmentPagerAdapter {
         public SectionsAdapter(FragmentManager fm) {
             super(fm);
@@ -77,9 +89,9 @@ public class MainActivity extends ActionBarActivity {
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:
-                    return new SmsListFragment();
+                    return smsListFragment;
                 case 1:
-                    return new BlackListFragment();
+                    return blackListFragment;
                 default:
                     Fragment fragment = new DummySectionFragment();
                     Bundle args = new Bundle();

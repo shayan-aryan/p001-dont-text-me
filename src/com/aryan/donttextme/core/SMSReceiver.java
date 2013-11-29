@@ -17,7 +17,6 @@ import android.widget.Toast;
 
 import com.aryan.donttextme.ui.activity.MainActivity;
 import com.aryan.donttextme.R;
-import com.aryan.donttextme.configuration.AppConfig;
 import com.aryan.donttextme.util.StringUtil;
 
 public class SMSReceiver extends BroadcastReceiver {
@@ -42,8 +41,8 @@ public class SMSReceiver extends BroadcastReceiver {
 
             DataBaseManager db = new DataBaseManager(context);
             //////////////////
-            db.AddToInbox(smsMessage, 48);
-            /*notifyBlockedMessage(smsMessage[0]);
+            /*db.AddToInbox(smsMessage, 48);
+            notifyBlockedMessage(smsMessage[0]);
             abortBroadcast();*/
             //////////////////
             if (db.isInWhiteList(smsMessage)) {
@@ -59,7 +58,7 @@ public class SMSReceiver extends BroadcastReceiver {
                 // user chooses
                 /*toast = Toast.makeText(context, "Possibly Spam SMS: " + smsMessage[0].getMessageBody(), Toast.LENGTH_LONG);
                 toast.show();*/
-                db.AddToSpecificNumbersBlackList(smsMessage[0].getOriginatingAddress());
+                db.AddToSpecificNumbersBlackList(smsMessage[0].getOriginatingAddress(),smsMessage[0].getOriginatingAddress());
                 notifyBlockedMessage(smsMessage[0]);
                 abortBroadcast();
             }
@@ -95,9 +94,6 @@ public class SMSReceiver extends BroadcastReceiver {
     }
 
     private boolean isInSpamList(String sender) {
-        if (sender.equals(AppConfig.IRANCELL_A))
-            return true;
-        else
             return false;
     }
 

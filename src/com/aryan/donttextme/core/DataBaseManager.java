@@ -282,11 +282,12 @@ public class DataBaseManager extends SQLiteOpenHelper {
         db.close();
     }
 
-    public void AddToSpecificNumbersBlackList(String number) {
+    public void AddToSpecificNumbersBlackList(String number, String name) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues cv = new ContentValues();
         synchronized (lock) {
             cv.put(COLUMN_SPECIFIC_NUMBER_FILTER, number);
+            cv.put(COLUMN_NAME, name);
             db.insert(TABLE_BLACKLIST, null, cv);
         }
         db.close();

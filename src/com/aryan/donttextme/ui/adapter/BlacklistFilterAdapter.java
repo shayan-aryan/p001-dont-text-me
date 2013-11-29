@@ -28,10 +28,11 @@ public class BlacklistFilterAdapter extends BaseAdapter {
     ArrayList<Filter> items = new ArrayList<Filter>();
     private Context context;
     private String filterKey, name;
+    private DataBaseManager dbm;
 
     public BlacklistFilterAdapter(Context context) {
         this.context = context;
-        DataBaseManager dbm = new DataBaseManager(context);
+        dbm = new DataBaseManager(context);
         items = dbm.getAllFilters();
     }
 
@@ -79,9 +80,15 @@ public class BlacklistFilterAdapter extends BaseAdapter {
         return view;
     }
 
-    public void updateItems(ArrayList<Filter> list) {
-        this.items = list;
+    public void updateItems() {
         notifyDataSetChanged();
+    }
+
+    @Override
+    public void notifyDataSetChanged() {
+        dbm = new DataBaseManager(context);
+        items = dbm.getAllFilters();
+        super.notifyDataSetChanged();
     }
 
     private static class ViewHolder {

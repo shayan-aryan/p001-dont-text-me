@@ -52,4 +52,14 @@ public class BlackListFragment extends Fragment {
         super.onAttach(activity);
         mActivity = activity;
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        adapter.updateItems();
+    }
+
+    public void UpdateItems(){
+        adapter.updateItems();
+    }
 }

@@ -5,6 +5,7 @@
               android:layout_height="wrap_content">
 
     <ImageView
+            android:id="@+id/total"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:src="@drawable/filter_blacklist_background"/>
@@ -29,13 +30,6 @@
             android:layout_height="wrap_content"
             android:layout_toRightOf="@+id/edit"
             android:src="@drawable/message"/>
-    <ImageView
-            android:id="@+id/total"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toRightOf="@+id/message"
-            android:layout_alignParentRight="true"
-            android:src="@drawable/remaining_space"/>
 
     <TextView
             android:id="@+id/name"
@@ -43,6 +37,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_marginRight="20dp"
+            android:layout_centerVertical="true"
             android:text="Filter Name"
             style="@style/textView"/>
 
