@@ -3,6 +3,7 @@
                 android:orientation="vertical"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
+                android:background="@drawable/background_gradient"
         >
 
     <TextView
@@ -30,6 +31,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:text="on"
+            style="@style/button"
             />
 
     <Button
@@ -38,6 +40,7 @@
             android:layout_height="wrap_content"
             android:layout_above="@+id/on"
             android:text="off"
+            style="@style/button"
             />
 
 </RelativeLayout>

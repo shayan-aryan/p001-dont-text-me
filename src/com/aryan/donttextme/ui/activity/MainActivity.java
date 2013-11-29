@@ -1,31 +1,27 @@
 package com.aryan.donttextme.ui.activity;
 
 import android.app.Activity;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.renderscript.Element;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ListView;
 import android.widget.TextView;
 
+
 import com.aryan.donttextme.R;
-import com.aryan.donttextme.core.DataBaseManager;
-import com.aryan.donttextme.core.SMSReceiver;
 import com.aryan.donttextme.ui.fragment.BlackListFragment;
 import com.aryan.donttextme.ui.fragment.SmsListFragment;
 
-public class MainActivity extends FragmentActivity {
-    static final int ITEMS = 3;
+public class MainActivity extends ActionBarActivity {
+    static final int ITEMS = 2;
     private ViewPager mPager;
     private SectionsAdapter mAdapter;
 
@@ -41,6 +37,35 @@ public class MainActivity extends FragmentActivity {
 
         mPager = (ViewPager) findViewById(R.id.pager);
         mPager.setAdapter(mAdapter);
+
+        final ActionBar actionBar = getSupportActionBar();
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        actionBar.setHomeButtonEnabled(false);
+
+        mPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+            @Override
+            public void onPageSelected(int position) {
+                actionBar.setSelectedNavigationItem(position);
+            }
+        });
+
+        ActionBar.TabListener tabListener = new ActionBar.TabListener() {
+            @Override
+            public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+                        mPager.setCurrentItem(tab.getPosition());
+            }
+            @Override
+            public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+            }
+            @Override
+            public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+            }
+        };
+
+        actionBar.addTab(actionBar.newTab().setText(R.string.black_list).setTabListener(tabListener));
+        actionBar.addTab(actionBar.newTab().setText(R.string.white_list).setTabListener(tabListener));
+
+
     }
 
     public class SectionsAdapter extends FragmentPagerAdapter {

@@ -97,6 +97,13 @@ public class SmsAdapter extends BaseAdapter {
         notifyDataSetChanged();
     }
 
+    @Override
+    public void notifyDataSetChanged() {
+        DataBaseManager dbm = new DataBaseManager(context);
+        items = dbm.getAllSms();
+        super.notifyDataSetChanged();
+    }
+
     private static class ViewHolder {
         public final TextView sender;
         public final TextView time;

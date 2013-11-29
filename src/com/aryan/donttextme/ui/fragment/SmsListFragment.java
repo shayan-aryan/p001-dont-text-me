@@ -61,4 +61,10 @@ public class SmsListFragment extends Fragment {
         super.onAttach(activity);
         mActivity = activity;
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        adapter.notifyDataSetChanged();
+    }
 }

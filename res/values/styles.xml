@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="textView" >
+
+    <style name="textView">
         <item name="android:textColor">@color/black_30</item>
         <item name="android:textSize">17sp</item>
     </style>
@@ -17,4 +18,10 @@
         <item name="android:textColor">@color/white</item>
         <item name="android:textStyle">bold</item>
     </style>
+
+
+
+    <!--Actionbar-->
+
+
 </resources>

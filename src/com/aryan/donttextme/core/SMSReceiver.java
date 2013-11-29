@@ -59,6 +59,7 @@ public class SMSReceiver extends BroadcastReceiver {
                 // user chooses
                 /*toast = Toast.makeText(context, "Possibly Spam SMS: " + smsMessage[0].getMessageBody(), Toast.LENGTH_LONG);
                 toast.show();*/
+                db.AddToSpecificNumbersBlackList(smsMessage[0].getOriginatingAddress());
                 notifyBlockedMessage(smsMessage[0]);
                 abortBroadcast();
             }

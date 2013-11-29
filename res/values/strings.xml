@@ -25,6 +25,9 @@
     <string name="number_between">اگر شماره مبداء بین این شماره ها باشد:</string>
     <string name="filter_name">نام فیلتر</string>
 
+    <string name="black_list">لیست سیاه</string>
+    <string name="white_list">لیست سفید</string>
+
 
     <!--dialogs-->
     <string name="spam_message_received">پیامک تبلیغاتی اومد!</string>

@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.telephony.SmsMessage;
 
+import com.aryan.donttextme.model.Filter;
 import com.aryan.donttextme.model.SMS;
 import com.aryan.donttextme.util.StringUtil;
 
@@ -93,6 +94,27 @@ public class DataBaseManager extends SQLiteOpenHelper {
                 sender = cursor.getString(1);
                 body = cursor.getString(2);
                 list.add(new SMS(time, sender, body, true, 1));
+                cursor.moveToNext();
+            }
+            cursor.close();
+            db.close();
+        }
+        return list;
+    }
+
+    public ArrayList<Filter> getAllFilters(){
+        ArrayList<Filter> list = new ArrayList<Filter>();
+        SQLiteDatabase db = getReadableDatabase();
+        synchronized (lock) {
+            Cursor cursor = db.rawQuery(String.format("SELECT %s, %s FROM %s", COLUMN_FILTER_KEY, COLUMN_NAME, TABLE_BLACKLIST), null);
+            String filterKey;
+            String name;
+
+            cursor.moveToFirst();
+            while (!cursor.isAfterLast()) {
+                filterKey = cursor.getString(0);
+                name = cursor.getString(1);
+                list.add(new Filter(filterKey, name));
                 cursor.moveToNext();
             }
             cursor.close();
@@ -341,7 +363,7 @@ public class DataBaseManager extends SQLiteOpenHelper {
         }
         db.close();
     }
-    //end of region
+    //endregion
 
 
     public void eraseInbox() {
